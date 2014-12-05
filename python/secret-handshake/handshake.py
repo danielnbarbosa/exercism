@@ -1,80 +1,57 @@
-def handshake(num):
-    result = []
-    a = bin(int(num))
-    print a
-    for i in 0,range(a),-1:
-        print a[i]
-        
-        
+import re
+import string
 
-def code(lst):
-    pass
+def handshake(number):
+    # number could be a string or an int
+    # if it's an int it will be converted into string
+    HANDSHAKE = ['jump', 'close your eyes', 'double blink', 'wink']
     
+    # check if binary string is invalid
+    if type(number) == str and re.compile('[^01]').search(number):
+        number = '0'
 
+    #check if integer is invalid
+    elif type(number) == int:
+        if number < 0 or number > 31:
+            number = '0'
+        else:
+            number = str(bin(int(number)))[2:]
 
-print handshake('9')
+    # check if reverse bit set
+    if len(number) == 5 and number[0] == '1':
+        # strip reverse bit
+        number = number[1:]
+        # reverse number and HANDSHAKE
+        number = number[::-1]
+        HANDSHAKE.reverse()
+     
+    # 0 pad binary string
+    number = string.zfill(number, 4)
+    # map binary string to secret handshake
+    return [HANDSHAKE[i] for i in reversed(range(len(number))) if number[i] == '1']
+    
+        
 
-"""
-Write a program that will take a decimal number, and convert it to the appropriate sequence of events for a secret handshake.
-
-> There are 10 types of people in the world: Those who understand
-> binary, and those who don't.
-
-You and your fellow cohort of those in the "know" when it comes to
-binary decide to come up with a secret "handshake".
-
-```
-1 = wink
-10 = double blink
-100 = close your eyes
-1000 = jump
-
-
-10000 = Reverse the order of the operations in the secret handshake.
-
-
-from handshake import handshake, code
-
-
-class HandshakeTest(unittest.TestCase):
-    def test_shake_int(self):
-        self.assertEqual(['wink','jump'], handshake(9))
-
-    def test_shake_bin1(self):
-        self.assertEqual(['close your eyes','double blink'], handshake('10110'))
-
-    def test_shake_bin2(self):
-        self.assertEqual(['wink','close your eyes'], handshake('101'))
-
-    def test_shake_negative_int(self):
-        self.assertEqual([], handshake(-9))
-
-    def test_shake_bin_invalid(self):
-        self.assertEqual([], handshake('121'))
-
-    def test_unknown_action(self):
-        self.assertEqual('0', code(['wink','sneeze']))
-
-    def test_code1(self):
-        self.assertEqual('1100', code(['close your eyes','jump']))
-
-    def test_code2(self):
-        self.assertEqual('11', code(['wink','double blink']))
-
-    def test_code3(self):
-        self.assertEqual('11010', code(['jump','double blink']))
-
-    def test_composition1(self):
-        self.assertEqual('11011', code(handshake(27)))
-
-    def test_composition2(self):
-        self.assertEqual('1', code(handshake(1)))
-
-    def test_composition3(self):
-        self.assertEqual('111', code(handshake('111')))
-
-    def test_composition4(self):
-        inp = ['wink','double blink','jump']
-        self.assertEqual(inp, handshake(code(inp)))
-
-"""
+def code(events):
+    HANDSHAKE = ['jump', 'close your eyes', 'double blink', 'wink']
+    result = ''
+    
+    # detect if order of events is reveresed
+    if len(events) >= 2 and (events[0] in HANDSHAKE and events[1] in HANDSHAKE) and HANDSHAKE.index(events[0]) < HANDSHAKE.index(events[1]):
+        result += '1'
+    
+    # map the events to a binary string
+    for i in range(len(HANDSHAKE)):
+        if HANDSHAKE[i] in events:
+            result += '1'
+        else:
+            result += '0'
+    result = result.lstrip('0')
+    
+    
+    # if there are unkown events it's invalid
+    for event in events:
+        if event not in HANDSHAKE:
+            result = '0'
+    
+    return result
