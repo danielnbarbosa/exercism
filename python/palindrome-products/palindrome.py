@@ -1,8 +1,3 @@
-def is_palindrome(num):
-    num_str = str(num)
-    if num_str == num_str[::-1]:
-        return True
-        
 def get_palindromes(max_factor, min_factor):
     lst = []
     for i in range(min_factor, max_factor+1):
